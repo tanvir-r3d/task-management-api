@@ -3,7 +3,9 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Common\TaskStatusFetchController;
 use App\Http\Controllers\Common\UserFetchController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskStatusController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,6 +36,21 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'jwt.verify']], function
         Route::delete('/{id}', [TaskStatusController::class, 'destroy']);
     });
 
+    Route::prefix('tasks')->group(function () {
+        Route::get('/', [TaskController::class, 'index']);
+        Route::post('/', [TaskController::class, 'store']);
+        Route::get('/{id}', [TaskController::class, 'show']);
+        Route::put('/{id}', [TaskController::class, 'update']);
+        Route::delete('/{id}', [TaskController::class, 'destroy']);
+    });
+
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::put('/{id}', [UserController::class, 'update']);
+        Route::delete('/{id}', [UserController::class, 'destroy']);
+    });
 
     Route::prefix('commons')->group(function () {
         Route::get('users', UserFetchController::class);
