@@ -14,7 +14,8 @@ class UserFetchController
     public function __invoke()
     {
         try {
-            $users = User::whereNotNull('email_verified_at')
+            $users = User::query()
+                // ->whereNotNull('email_verified_at')
                 ->where('id', '!=', auth()->user()->id)
                 ->get(["id as value", "name as label"]);
 

@@ -6,6 +6,7 @@ use App\Traits\AdditionalField;
 use App\Traits\UUIDAble;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -24,9 +25,9 @@ class Task extends Model
         'deleted_by',
     ];
 
-    public function assignees(): HasMany
+    public function assignees(): BelongsToMany
     {
-        return $this->hasMany(TaskAssignee::class, 'task_id');
+        return $this->belongsToMany(User::class, 'task_assginees', 'task_id');
     }
 
     public function comments(): HasMany

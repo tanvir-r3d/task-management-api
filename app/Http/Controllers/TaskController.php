@@ -43,7 +43,7 @@ class TaskController extends Controller
             foreach ($request->get('assignees') as $assignee) {
                 $assignees[] = [
                     'task_uuid' => $task->uuid,
-                    'user_id' => $assignee['user_id'],
+                    'user_id' => $assignee['value'],
                 ];
             }
             $task->assignees()->createMany($assignees);
@@ -62,7 +62,9 @@ class TaskController extends Controller
     public function show(string $id)
     {
         try {
-            $task = Task::with(['assignees'])->findOrFail($id);
+            $task = Task::query()
+                ->with(['assignees:id as value,name as label', 'status'])
+                ->findOrFail($id);
 
             $canEdit = $task->created_by == auth()->user()->id;
             if (!$canEdit) {
@@ -103,7 +105,7 @@ class TaskController extends Controller
         foreach ($assignees as $assignee) {
             TaskAssignee::updateOrCreate([
                 'id' => $assignee['id'] ?? null,
-                'user_id' => $assignee['user_id'],
+                'user_id' => $assignee['value'],
                 'task_id' => $task->id,
                 'task_uuid' => $task->uuid,
             ], [
