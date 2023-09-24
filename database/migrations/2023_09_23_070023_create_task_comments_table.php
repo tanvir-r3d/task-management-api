@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('task_comments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('task_id');
-            $table->uuid('task_uuid');
             $table->unsignedBigInteger('user_id');
             $table->text('comment');
             $table->unsignedBigInteger('created_by')->nullable();

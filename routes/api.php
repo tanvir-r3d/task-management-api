@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Common\TaskStatusFetchController;
 use App\Http\Controllers\Common\UserFetchController;
+use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskStatusController;
 use App\Http\Controllers\UserController;
@@ -42,6 +43,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'jwt.verify']], function
         Route::get('/{id}', [TaskController::class, 'show']);
         Route::put('/{id}', [TaskController::class, 'update']);
         Route::delete('/{id}', [TaskController::class, 'destroy']);
+
+        Route::prefix('/{id}/comments')->group(function () {
+            Route::get('/', [TaskCommentController::class, 'index']);
+            Route::post('/', [TaskCommentController::class, 'store']);
+        });
     });
 
     Route::prefix('users')->group(function () {
