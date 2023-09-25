@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class TaskCommentController extends Controller
 {
@@ -49,7 +50,7 @@ class TaskCommentController extends Controller
                 'created_by' => auth()->user()->id,
             ]);
 
-            return $this->successResponse($taskComment, "Task comment stored successfully.");
+            return $this->successResponse($taskComment, "Task comment stored successfully.", Response::HTTP_CREATED);
         } catch (Exception $exception) {
             Log::error("taskComment:store --> {$exception->getMessage()}");
             return $this->errorResponse($exception->getMessage());

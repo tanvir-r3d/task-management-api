@@ -8,6 +8,7 @@ use App\Traits\ApiAble;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class TaskStatusController extends Controller
 {
@@ -38,7 +39,7 @@ class TaskStatusController extends Controller
         try {
             $taskStatus->fill($request->all())->save();
 
-            return $this->successResponse($taskStatus, "Task Status stored successfully.");
+            return $this->successResponse($taskStatus, "Task Status stored successfully.", Response::HTTP_CREATED);
         } catch (Exception $exception) {
             Log::error("taskStatus:store --> {$exception->getMessage()}");
             return $this->errorResponse($exception->getMessage());

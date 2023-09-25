@@ -24,9 +24,12 @@ Route::post('/v1/auth/login', [AuthController::class, 'login']);
 Route::post('/v1/users', [UserController::class, 'store']);
 
 Route::group(['prefix' => 'v1', 'middleware' => ['api', 'jwt.verify']], function () {
+
     Route::prefix('auth')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
+        Route::post('send-verification-mail', [AuthController::class, 'sendVerificationMail']);
+        Route::post('check-verification-code', [AuthController::class, 'checkVerificationCode']);
         Route::get('me', [AuthController::class, 'me']);
     });
 
