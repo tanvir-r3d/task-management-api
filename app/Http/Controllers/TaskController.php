@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TaskRequest;
 use App\Models\Task;
 use App\Models\TaskAssignee;
 use App\Traits\ApiAble;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -14,13 +16,14 @@ use Symfony\Component\HttpFoundation\Response;
 class TaskController extends Controller
 {
     use ApiAble;
+
     /**
-     * Display a listing of the resource.
+     * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
         try {
-            $list = Task::with(['assignees', 'status'])->paginate();
+            $list = Task::with(['assigneeUsers', 'status'])->paginate();
 
             return $this->successResponse($list, "Task fetched successfully");
         } catch (Exception $exception) {
@@ -30,9 +33,11 @@ class TaskController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @param TaskRequest $request
+     * @param Task $task
+     * @return JsonResponse
      */
-    public function store(Request $request, Task $task)
+    public function store(TaskRequest $request, Task $task): JsonResponse
     {
         try {
             DB::beginTransaction();
@@ -57,13 +62,14 @@ class TaskController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @param string $id
+     * @return JsonResponse
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
         try {
             $task = Task::query()
-                ->with(['assignees:id as value,name as label', 'status'])
+                ->with(['assigneeUsers:id as value,name as label', 'status'])
                 ->findOrFail($id);
 
             $canEdit = $task->created_by == auth()->user()->id;
@@ -80,9 +86,11 @@ class TaskController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @param Request $request
+     * @param string $id
+     * @return JsonResponse
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): JsonResponse
     {
         try {
             DB::beginTransaction();
@@ -100,6 +108,11 @@ class TaskController extends Controller
         }
     }
 
+    /**
+     * @param $assignees
+     * @param $task
+     * @return void
+     */
     private function updateAssignee($assignees, $task)
     {
         foreach ($assignees as $assignee) {
@@ -117,9 +130,10 @@ class TaskController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @param string $id
+     * @return JsonResponse
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         try {
             $task = Task::findOrFail($id);

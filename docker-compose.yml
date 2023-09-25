@@ -1,0 +1,72 @@
+version: "3.7"
+services:
+    task_management_app:
+        build:
+            args:
+                user: Tanvir
+                uid: 1000
+            context: ./
+            dockerfile: Dockerfile
+        image: task-management
+        container_name: task-management-application
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+            - ./.docker/app/php-fpm.ini:/usr/local/etc/php/conf.d/99-app.ini
+        depends_on:
+            - task_management_database
+        links:
+            - task_management_database
+        networks:
+            - task-management-network
+    task_management_nginx:
+        image: nginx:alpine
+        container_name: task-management-nginx
+        restart: unless-stopped
+        ports:
+            - "${NGINX_PORT}:80"
+        volumes:
+            - ./:/var/www
+            - ./.docker/nginx:/etc/nginx/conf.d/
+        networks:
+            - task-management-network
+        depends_on:
+            - task_management_database
+            - task_management_phpmyadmin
+    task_management_database:
+        image: mysql:latest
+        container_name: task-management-database
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USERNAME}
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - ./mysql:/var/lib/mysql
+        networks:
+            - task-management-network
+    task_management_phpmyadmin:
+        image: phpmyadmin
+        container_name: task-management-phpmyadmin
+        restart: always
+        tty: true
+        depends_on:
+            - task_management_database
+        ports:
+            - "${PMA_PORT}:80"
+        environment:
+            PMA_HOST: task_management_database
+            PMA_PORT: 3306
+            PMA_USER: ${DB_USERNAME}
+            PMA_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            UPLOAD_LIMIT: 2048M
+        networks:
+            - task-management-network
+networks:
+    task-management-network:
+        driver: bridge

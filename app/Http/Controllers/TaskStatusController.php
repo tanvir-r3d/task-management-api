@@ -6,16 +6,17 @@ use App\Http\Requests\TaskStatusRequest;
 use App\Models\TaskStatus;
 use App\Traits\ApiAble;
 use Exception;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
 class TaskStatusController extends Controller
 {
     use ApiAble;
+
     /**
-     * Display a listing of the resource.
+     * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
         try {
             $list = TaskStatus::paginate();
@@ -28,9 +29,11 @@ class TaskStatusController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @param TaskStatusRequest $request
+     * @param TaskStatus $taskStatus
+     * @return JsonResponse
      */
-    public function store(TaskStatusRequest $request, TaskStatus $taskStatus)
+    public function store(TaskStatusRequest $request, TaskStatus $taskStatus): JsonResponse
     {
         try {
             $taskStatus->fill($request->all())->save();
@@ -43,9 +46,10 @@ class TaskStatusController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @param string $id
+     * @return JsonResponse
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
         try {
             $taskStatus = TaskStatus::findOrFail($id);
@@ -58,9 +62,11 @@ class TaskStatusController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @param TaskStatusRequest $request
+     * @param string $id
+     * @return JsonResponse
      */
-    public function update(TaskStatusRequest $request, string $id)
+    public function update(TaskStatusRequest $request, string $id): JsonResponse
     {
         try {
             $taskStatus = TaskStatus::findOrFail($id);
@@ -74,9 +80,10 @@ class TaskStatusController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @param string $id
+     * @return JsonResponse
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         try {
             TaskStatus::findOrFail($id)->delete();

@@ -6,16 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\TaskStatus;
 use App\Traits\ApiAble;
 use Exception;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
 class TaskStatusFetchController extends Controller
 {
     use ApiAble;
+
     /**
-     * Handle the incoming request.
+     * @return JsonResponse
      */
-    public function __invoke()
+    public function __invoke(): JsonResponse
     {
         try {
             $taskStatuses = TaskStatus::get(['id as value', 'name as label']);

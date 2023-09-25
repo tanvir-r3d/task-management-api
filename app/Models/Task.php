@@ -25,7 +25,12 @@ class Task extends Model
         'deleted_by',
     ];
 
-    public function assignees(): BelongsToMany
+    public function assignees(): HasMany
+    {
+        return $this->hasMany(TaskAssignee::class, 'task_id');
+    }
+
+    public function assigneeUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'task_assginees', 'task_id');
     }

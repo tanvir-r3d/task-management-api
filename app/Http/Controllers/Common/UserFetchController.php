@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Common;
 use App\Models\User;
 use App\Traits\ApiAble;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
 class UserFetchController
 {
     use ApiAble;
 
-    public function __invoke()
+    /**
+     * @return JsonResponse
+     */
+    public function __invoke(): JsonResponse
     {
         try {
             $users = User::query()

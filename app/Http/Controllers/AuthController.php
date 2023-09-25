@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\ApiAble;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
+    use ApiAble;
 
     public function __construct()
     {
@@ -28,7 +30,7 @@ class AuthController extends Controller
 
     public function me()
     {
-        return response()->json($this->guard()->user());
+        return $this->successResponse($this->guard()->user());
     }
 
     public function logout()

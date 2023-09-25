@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TaskComment;
 use App\Traits\ApiAble;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -12,7 +13,11 @@ class TaskCommentController extends Controller
 {
     use ApiAble;
 
-    public function index($id)
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
+    public function index($id): JsonResponse
     {
         try {
             $taskCommentList = TaskComment::with('user')->where('task_id', $id)->get();
@@ -28,7 +33,12 @@ class TaskCommentController extends Controller
         }
     }
 
-    public function store(Request $request, $id)
+    /**
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     */
+    public function store(Request $request, $id): JsonResponse
     {
         try {
             $comment = $request->get('comment');

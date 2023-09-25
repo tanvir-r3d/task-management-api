@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Traits\ApiAble;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -15,9 +16,9 @@ class UserController extends Controller
     use ApiAble;
 
     /**
-     * Display a listing of the resource.
+     * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
         try {
             $list = User::paginate();
@@ -30,9 +31,11 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @param Request $request
+     * @param User $user
+     * @return JsonResponse
      */
-    public function store(Request $request, User $user)
+    public function store(Request $request, User $user): JsonResponse
     {
         try {
             $request['password'] = Hash::make($request->get('password'));
@@ -46,9 +49,10 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @param string $id
+     * @return JsonResponse
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
         try {
             $user = User::findOrFail($id);
@@ -61,9 +65,11 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @param Request $request
+     * @param string $id
+     * @return JsonResponse
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): JsonResponse
     {
         try {
             $user = User::findOrFail($id);
@@ -77,9 +83,10 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @param string $id
+     * @return JsonResponse
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         try {
             User::findOrFail($id)->delete();
