@@ -24,6 +24,13 @@ class TaskController extends Controller
     {
         try {
             $list = Task::with(['assigneeUsers', 'status'])->paginate();
+            $list->getCollection()->transform(function ($collection) {
+                $collection['can_edit'] = $collection->created_by == auth()->user()->id;
+                if (!$collection['can_edit']) {
+                    $collection['can_edit'] = !!$collection->assignees->where('user_id', auth()->user()->id)->first();
+                }
+                return $collection;
+            });
 
             return $this->successResponse($list, "Task fetched successfully");
         } catch (Exception $exception) {
@@ -117,7 +124,6 @@ class TaskController extends Controller
     {
         foreach ($assignees as $assignee) {
             TaskAssignee::updateOrCreate([
-                'id' => $assignee['id'] ?? null,
                 'user_id' => $assignee['value'],
                 'task_id' => $task->id,
                 'task_uuid' => $task->uuid,
@@ -125,7 +131,7 @@ class TaskController extends Controller
                 'created_by' => auth()->user()->id,
             ]);
         }
-        $users = collect($assignees)->pluck('user_id');
+        $users = collect($assignees)->pluck('value');
         TaskAssignee::where('task_id', $task->id)->whereNotIn('user_id', $users)->delete();
     }
 

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
 use App\Models\TaskComment;
+use App\Notifications\TaskCommentNotification;
 use App\Traits\ApiAble;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -49,6 +51,17 @@ class TaskCommentController extends Controller
                 'task_id' => $id,
                 'created_by' => auth()->user()->id,
             ]);
+            $task = Task::with(['assigneeUsers', 'createdBy'])->findOrFail($id);
+            $notificationPayload = [
+                'name' => $task->title,
+                'comment_user_name' => auth()->user()->name,
+                'comment' => $comment,
+            ];
+
+            $task->createdBy->notify(new TaskCommentNotification($notificationPayload));
+            foreach ($task->assigneeUsers as $user) {
+                $user->notify(new TaskCommentNotification($notificationPayload));
+            }
 
             return $this->successResponse($taskComment, "Task comment stored successfully.", Response::HTTP_CREATED);
         } catch (Exception $exception) {

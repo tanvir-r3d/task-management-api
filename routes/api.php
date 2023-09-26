@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Common\NumberOfTotalTaskController;
 use App\Http\Controllers\Common\TaskStatusFetchController;
 use App\Http\Controllers\Common\UserFetchController;
 use App\Http\Controllers\TaskCommentController;
@@ -64,5 +65,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'jwt.verify']], function
     Route::prefix('commons')->group(function () {
         Route::get('users', UserFetchController::class);
         Route::get('task-statuses', TaskStatusFetchController::class);
+        Route::get('total-task', NumberOfTotalTaskController::class);
     });
 });
