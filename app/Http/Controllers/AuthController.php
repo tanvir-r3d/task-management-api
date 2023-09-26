@@ -11,8 +11,8 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
@@ -55,6 +55,7 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
+            'email' => auth()->user()->email,
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => $this->guard()->factory()->getTTL() * 60
@@ -101,8 +102,10 @@ class AuthController extends Controller
                 ->first();
             if ($verified) {
                 $verified->delete();
-                User::find(auth()->user()->id)->update(['email_verified_at' => now()]);
-                return $this->successResponse(null, 'Successfully verified email.', Response::HTTP_OK);
+                $user = User::find(auth()->user()->id);
+                $user->email_verified_at = now();
+                $user->save();
+                return $this->successResponse(null, 'Successfully verified email.');
             }
 
             return $this->errorResponse('Verification code is not correct', Response::HTTP_NOT_ACCEPTABLE);
